@@ -56,7 +56,7 @@ public class EGLExtractor implements Extractor
     private static final String TAG = "EGLExtractor";
     private static final boolean VERBOSE = true;
 
-    private static final File FILES_DIR = new File("/sdcard");
+    private static final File FILES_DIR = new File("/sdcard/");
     private static final int MAX_FRAMES = 10;       // stop extracting after this many
     private static final int DEFAULT_WIDTH = 640;
     private static final int DEFAULT_HEIGHT = 480;
@@ -68,7 +68,7 @@ public class EGLExtractor implements Extractor
     {
         if (VERBOSE)
         {
-            mEventListener.message( message );
+    //        mEventListener.message( message );
             Log.d(TAG, message);
         }
     }
@@ -579,7 +579,12 @@ public class EGLExtractor implements Extractor
                 bmp.copyPixelsFromBuffer(mPixelBuf);
                 bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
                 bmp.recycle();
-            } finally
+            }
+            catch ( IOException ex )
+            {
+                log( "Error saving file " + ex.getMessage() );
+            }
+            finally
             {
                 if (bos != null) bos.close();
             }

@@ -73,10 +73,24 @@ public class VideoListFragment extends Fragment
 
     private void startExtraction( String filename )
     {
-//        Extractor extractor = new EGLExtractor();
-        Extractor extractor = new FFmpegExtractor();
-        ExtractAsyncTask task = new ExtractAsyncTask( filename , extractor , mEventListener );
-        task.doInBackground();
+        int selectedExtractor = Application.loadSettings().getExtrator();
+        Extractor extractor = null;
+
+        switch ( selectedExtractor )
+        {
+            case Application.EXTRACTOR_EGL:
+                extractor = new EGLExtractor();
+                break;
+            case Application.EXTRACTOR_FFMPEG:
+                extractor = new FFmpegExtractor();
+                break;
+
+        }
+        if( extractor != null )
+        {
+            ExtractAsyncTask task = new ExtractAsyncTask(filename, extractor, mEventListener);
+            task.execute();
+        }
     }
 
 

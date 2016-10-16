@@ -16,11 +16,15 @@
 package org.androidsoft.frameextractor;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 /**
@@ -35,11 +39,25 @@ public class MainActivity extends AppCompatActivity implements ExtractEventListe
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_main);
+
+        Application.setContext( this );
+
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mTvOutput = (TextView) findViewById(R.id.output);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.settings_button );
+        fab.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                settings();
+            }
+        });
+
     }
 
     @Override
@@ -61,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements ExtractEventListe
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings)
         {
+            settings();
             return true;
         }
 
@@ -89,6 +108,13 @@ public class MainActivity extends AppCompatActivity implements ExtractEventListe
             VideoListFragment f = (VideoListFragment) fragment;
             f.setExtractEventListener( this );
         }
+    }
+
+    private void settings()
+    {
+        Intent intent = new Intent( this , SettingsActivity.class );
+        startActivity(intent);
+
     }
 
 }

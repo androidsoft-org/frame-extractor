@@ -18,11 +18,11 @@ package org.androidsoft.frameextractor;
 import android.os.AsyncTask;
 
 /**
- * Asynchronous task to extract frame
+ * Asynchronous task to extract frames
  * @author Pierre LEVY
  */
 
-class ExtractAsyncTask extends AsyncTask<Void, Void, Void>
+class ExtractAsyncTask extends AsyncTask<Void, Void, String>
 {
     private String mFilename;
     private Extractor mExtractor;
@@ -49,22 +49,23 @@ class ExtractAsyncTask extends AsyncTask<Void, Void, Void>
     }
 
     @Override
-    protected Void doInBackground(Void... arg0)
+    protected String doInBackground(Void... arg0)
     {
+        String ret = "Extraction completed successfully !";
         try
         {
             mExtractor.extractMpegFrames( mFilename , mListener );
         } catch (Exception e)
         {
-            mListener.message( "Extraction aborted on error : " + e.getMessage());
+            ret = "Extraction aborted on error : " + e.getMessage();
             e.printStackTrace();
         }
-        return null;
+        return ret;
     }
 
     @Override
-    protected void onPostExecute(Void result)
+    protected void onPostExecute(String result)
     {
-        mListener.message( "Extraction completed..." );
+        mListener.message( result );
     }
 }
