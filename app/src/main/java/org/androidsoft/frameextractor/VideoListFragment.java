@@ -73,7 +73,8 @@ public class VideoListFragment extends Fragment
 
     private void startExtraction( String filename )
     {
-        int selectedExtractor = Application.loadSettings().getExtrator();
+        Settings settings = Application.loadSettings();
+        int selectedExtractor = settings.getExtrator();
         Extractor extractor = null;
 
         switch ( selectedExtractor )
@@ -88,7 +89,7 @@ public class VideoListFragment extends Fragment
         }
         if( extractor != null )
         {
-            ExtractAsyncTask task = new ExtractAsyncTask(filename, extractor, mEventListener);
+            ExtractAsyncTask task = new ExtractAsyncTask(filename, extractor, mEventListener, settings);
             task.execute();
         }
     }

@@ -18,8 +18,9 @@ package org.androidsoft.frameextractor.extractors;
 import android.graphics.Bitmap;
 import android.os.Environment;
 
-import org.androidsoft.frameextractor.ExtractEventListener;
+import org.androidsoft.frameextractor.ExtractAsyncTask;
 import org.androidsoft.frameextractor.Extractor;
+import org.androidsoft.frameextractor.Settings;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
@@ -35,14 +36,16 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 public class FFmpegExtractor implements Extractor
 {
     @Override
-    public void extractMpegFrames(String filePath, ExtractEventListener listener) throws IOException
+    public void extractMpegFrames(String filePath, ExtractAsyncTask task, Settings settings) throws IOException
     {
+        task.progressMessage("Extractor FFmpeg using FFmpegMediaMetadataRetriever()");
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         med.setDataSource(filePath);
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < settings.getImageCount(); i++)
         {
-            String filename = Environment.getExternalStorageDirectory().getPath() + "/image" + i + ".png";
+            String filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image" + i + ".png";
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream( filename ));
+            task.progressMessage("Writing file: " + filename);
             Bitmap bmp = med.getFrameAtTime(i * 1000000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
             bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
             bmp.recycle();
