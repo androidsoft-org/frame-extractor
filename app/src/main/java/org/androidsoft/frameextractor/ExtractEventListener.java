@@ -23,13 +23,13 @@ package org.androidsoft.frameextractor;
 public interface ExtractEventListener
 {
     /**
-     * Send message to listener
+     * Send progressMessage to listener
      * @param message
      */
     void message(String message );
 
     /**
-     * Clear listener message queue
+     * Clear listener progressMessage queue
      */
     void clearMessages();
 }

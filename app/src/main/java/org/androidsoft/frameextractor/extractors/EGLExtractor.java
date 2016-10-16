@@ -28,11 +28,14 @@ import android.opengl.EGLSurface;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Surface;
 
+import org.androidsoft.frameextractor.ExtractAsyncTask;
 import org.androidsoft.frameextractor.ExtractEventListener;
 import org.androidsoft.frameextractor.Extractor;
+import org.androidsoft.frameextractor.Settings;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -56,19 +59,18 @@ public class EGLExtractor implements Extractor
     private static final String TAG = "EGLExtractor";
     private static final boolean VERBOSE = true;
 
-    private static final File FILES_DIR = new File("/sdcard/");
-    private static final int MAX_FRAMES = 10;       // stop extracting after this many
-    private static final int DEFAULT_WIDTH = 640;
-    private static final int DEFAULT_HEIGHT = 480;
+    private static File FILES_DIR;
+    private static int MAX_FRAMES;       // stop extracting after this many
 
 
     private static ExtractEventListener mEventListener;
+    private static ExtractAsyncTask mTask;
 
     static void log( String message )
     {
         if (VERBOSE)
         {
-    //        mEventListener.message( message );
+            mTask.progressMessage(message);
             Log.d(TAG, message);
         }
     }
@@ -81,14 +83,21 @@ public class EGLExtractor implements Extractor
      * you're extracting frames you don't want black bars.
      */
     @Override
-    public void extractMpegFrames( String filePath, ExtractEventListener listener ) throws IOException
+    public void extractMpegFrames(String filePath, ExtractAsyncTask task, Settings settings) throws IOException
     {
-        mEventListener = listener;
+        mTask = task;
+        log("Running Extractor EGL");
+        log("using MediaExtractor and bitmap rendered with EGL on a surface");
+
+
         MediaCodec decoder = null;
         CodecOutputSurface outputSurface = null;
         MediaExtractor extractor = null;
-        int saveWidth = DEFAULT_WIDTH;
-        int saveHeight = DEFAULT_HEIGHT;
+        MAX_FRAMES = settings.getImageCount();
+        int saveWidth = settings.getDefaultWidth();
+        int saveHeight = settings.getDefaultHeight();
+        File sdCard = Environment.getExternalStorageDirectory();
+        FILES_DIR = new File(sdCard.getAbsolutePath());
 
         try
         {
@@ -345,7 +354,7 @@ public class EGLExtractor implements Extractor
             // these test cases.
             //
             // The CTS-created thread has a Looper, and the SurfaceTexture constructor will
-            // create a Handler that uses it.  The "frame available" message is delivered
+            // create a Handler that uses it.  The "frame available" progressMessage is delivered
             // there, but since we're not a Looper-based thread we'll never see it.  For
             // this to do anything useful, CodecOutputSurface must be created on a thread without
             // a Looper, so that SurfaceTexture uses the main application Looper instead.

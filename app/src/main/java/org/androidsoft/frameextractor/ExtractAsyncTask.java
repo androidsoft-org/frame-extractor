@@ -22,17 +22,19 @@ import android.os.AsyncTask;
  * @author Pierre LEVY
  */
 
-class ExtractAsyncTask extends AsyncTask<Void, Void, String>
+public class ExtractAsyncTask extends AsyncTask<Void, String, String>
 {
     private String mFilename;
     private Extractor mExtractor;
     private ExtractEventListener mListener;
+    private Settings mSettings;
 
-    ExtractAsyncTask(String filename , Extractor extractor, ExtractEventListener listener )
+    ExtractAsyncTask(String filename, Extractor extractor, ExtractEventListener listener, Settings settings)
     {
         mFilename = filename;
         mExtractor = extractor;
         mListener = listener;
+        mSettings = settings;
     }
 
     @Override
@@ -43,9 +45,11 @@ class ExtractAsyncTask extends AsyncTask<Void, Void, String>
     }
 
     @Override
-    protected void onProgressUpdate(Void... values)
+    protected void onProgressUpdate(String... values)
     {
         super.onProgressUpdate(values);
+        mListener.message(values[0]);
+
     }
 
     @Override
@@ -54,18 +58,26 @@ class ExtractAsyncTask extends AsyncTask<Void, Void, String>
         String ret = "Extraction completed successfully !";
         try
         {
-            mExtractor.extractMpegFrames( mFilename , mListener );
+
+            mExtractor.extractMpegFrames(mFilename, this, mSettings);
         } catch (Exception e)
         {
             ret = "Extraction aborted on error : " + e.getMessage();
             e.printStackTrace();
+
         }
         return ret;
+
     }
 
     @Override
     protected void onPostExecute(String result)
     {
         mListener.message( result );
+    }
+
+    public void progressMessage(String message)
+    {
+        publishProgress(message);
     }
 }

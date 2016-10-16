@@ -26,8 +26,9 @@ public interface Extractor
     /**
      * Extract images from a given video file
      * @param filePath The video absolute path
-     * @param listener The listener of extract events
+     * @param task The asynchronous task launching the extractor
+     * @param settings The generation settings
      * @throws IOException if a file error occurs
      */
-    void extractMpegFrames( String filePath, ExtractEventListener listener ) throws IOException;
+    void extractMpegFrames(String filePath, ExtractAsyncTask task, Settings settings) throws IOException;
 }
