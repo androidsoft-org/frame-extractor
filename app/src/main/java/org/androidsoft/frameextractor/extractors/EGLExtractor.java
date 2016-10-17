@@ -15,11 +15,13 @@
 
 package org.androidsoft.frameextractor.extractors;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
+import android.media.MediaScannerConnection;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
@@ -60,7 +62,10 @@ public class EGLExtractor implements Extractor
     private static final boolean VERBOSE = true;
 
     private static File FILES_DIR;
-    private static int MAX_FRAMES;       // stop extracting after this many
+    private static int MAX_FRAMES;
+    private static String FILE_EXT;
+    private static int COMPRESSION_FORMAT;
+    private static Context CONTEXT;
 
 
     private static ExtractEventListener mEventListener;
@@ -75,9 +80,9 @@ public class EGLExtractor implements Extractor
         }
     }
     /**
-     * Tests extraction from an MP4 to a series of PNG files.
+     * Tests extraction from an MP4 to a series of JPEG or PNG files.
      * <p>
-     * We scale the video to 640x480 for the PNG just to demonstrate that we can scale the
+     * We scale the video to 640x480 for the JPEG or PNG just to demonstrate that we can scale the
      * video with the GPU.  If the input video has a different aspect ratio, we could preserve
      * it by adjusting the GL viewport to get letterboxing or pillarboxing, but generally if
      * you're extracting frames you don't want black bars.
@@ -93,11 +98,14 @@ public class EGLExtractor implements Extractor
         MediaCodec decoder = null;
         CodecOutputSurface outputSurface = null;
         MediaExtractor extractor = null;
-        MAX_FRAMES = settings.getImageCount();
+        MAX_FRAMES = settings.getFrameCount();
         int saveWidth = settings.getDefaultWidth();
         int saveHeight = settings.getDefaultHeight();
         File sdCard = Environment.getExternalStorageDirectory();
         FILES_DIR = new File(sdCard.getAbsolutePath());
+        FILE_EXT = settings.getImageExtension();
+        COMPRESSION_FORMAT = settings.getImageFormat();
+        CONTEXT = settings.getContext();
 
         try
         {
@@ -275,7 +283,7 @@ public class EGLExtractor implements Extractor
 
                         if (decodeCount < MAX_FRAMES)
                         {
-                            File outputFile = new File(FILES_DIR, String.format("frame-%02d.png", decodeCount));
+                            File outputFile = new File(FILES_DIR, String.format("egl-frame-%02d%s", decodeCount, FILE_EXT));
                             long startWhen = System.nanoTime();
                             outputSurface.saveFrame(outputFile.toString());
                             frameSaveTime += System.nanoTime() - startWhen;
@@ -589,8 +597,18 @@ public class EGLExtractor implements Extractor
                 Bitmap bmp = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
                 mPixelBuf.rewind();
                 bmp.copyPixelsFromBuffer(mPixelBuf);
-                bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
+                if (COMPRESSION_FORMAT == Settings.FORMAT_JPEG)
+                {
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+                } else if (COMPRESSION_FORMAT == Settings.FORMAT_PNG)
+                {
+                    bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
+                }
+
                 bmp.recycle();
+                // hack to see immediatly created files with MTP
+                MediaScannerConnection.scanFile(CONTEXT, new String[]{filename}, null, null);
+
             }
             catch ( IOException ex )
             {

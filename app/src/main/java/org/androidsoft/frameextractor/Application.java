@@ -23,18 +23,18 @@ import android.content.SharedPreferences;
 
 public class Application
 {
-    public static final int EXTRACTOR_EGL = 1;
-    public static final int EXTRACTOR_FFMPEG = 2;
 
     private static final String PREFS_NAME = "frameextractor";
     private static final String PREF_EXTRACTOR = "extrator";
-    private static final String PREF_IMAGE_COUNT = "image.count";
+    private static final String PREF_FRAME_COUNT = "frame.count";
     private static final String PREF_DEFAULT_WIDTH = "default.width";
     private static final String PREF_DEFAULT_HEIGHT = "default.height";
-    private static final int DEFAULT_EXTRACTOR = EXTRACTOR_EGL;
-    private static final int DEFAULT_IMAGE_COUNT = 10;
+    private static final String PREF_IMAGE_FORMAT = "image.format";
+    private static final int DEFAULT_EXTRACTOR = Settings.EXTRACTOR_EGL;
+    private static final int DEFAULT_FRAME_COUNT = 10;
     private static final int DEFAULT_WIDTH = 640;
     private static final int DEFAULT_HEIGHT = 480;
+    private static final int DEFAULT_IMAGE_FORMAT = Settings.FORMAT_JPEG;
 
     private static Context mContext;
 
@@ -47,9 +47,11 @@ public class Application
     {
         Settings settings = new Settings();
         settings.setExtrator( getPrefs().getInt( PREF_EXTRACTOR, DEFAULT_EXTRACTOR ));
-        settings.setImageCount( getPrefs().getInt( PREF_IMAGE_COUNT, DEFAULT_IMAGE_COUNT ));
+        settings.setFrameCount(getPrefs().getInt(PREF_FRAME_COUNT, DEFAULT_FRAME_COUNT));
         settings.setDefaultWidth( getPrefs().getInt( PREF_DEFAULT_WIDTH, DEFAULT_WIDTH ));
         settings.setDefaultHeight( getPrefs().getInt( PREF_DEFAULT_HEIGHT, DEFAULT_HEIGHT ));
+        settings.setImageFormat(getPrefs().getInt(PREF_IMAGE_FORMAT, DEFAULT_IMAGE_FORMAT));
+        settings.setContext(mContext);
 
         return settings;
     }
@@ -58,9 +60,10 @@ public class Application
     {
         SharedPreferences.Editor editor = getPrefs().edit();
         editor.putInt( PREF_EXTRACTOR , settings.getExtrator() );
-        editor.putInt( PREF_IMAGE_COUNT , settings.getImageCount() );
+        editor.putInt(PREF_FRAME_COUNT, settings.getFrameCount());
         editor.putInt( PREF_DEFAULT_WIDTH , settings.getDefaultWidth() );
         editor.putInt( PREF_DEFAULT_HEIGHT , settings.getDefaultHeight() );
+        editor.putInt(PREF_IMAGE_FORMAT, settings.getImageFormat());
         editor.apply();
     }
 

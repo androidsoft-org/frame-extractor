@@ -30,6 +30,8 @@ public class SettingsActivity extends AppCompatActivity
 {
     private RadioButton mRadioEGL;
     private RadioButton mRadioFFmpeg;
+    private RadioButton mRadioFormatPNG;
+    private RadioButton mRadioFormatJPEG;
     private EditText mEditCount;
     private EditText mEditWidth;
     private EditText mEditHeight;
@@ -43,12 +45,16 @@ public class SettingsActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         Settings settings = Application.loadSettings();
-        mRadioEGL = (RadioButton) findViewById( R.id.button_egl_extractor );
-        mRadioEGL.setChecked( settings.getExtrator() == Application.EXTRACTOR_EGL );
-        mRadioFFmpeg = (RadioButton) findViewById( R.id.button_ffmpeg_extractor );
-        mRadioFFmpeg.setChecked( settings.getExtrator() == Application.EXTRACTOR_FFMPEG );
+        mRadioEGL = (RadioButton) findViewById(R.id.radio_egl_extractor);
+        mRadioEGL.setChecked(settings.getExtrator() == Settings.EXTRACTOR_EGL);
+        mRadioFFmpeg = (RadioButton) findViewById(R.id.radio_ffmpeg_extractor);
+        mRadioFFmpeg.setChecked(settings.getExtrator() == Settings.EXTRACTOR_FFMPEG);
+        mRadioFormatPNG = (RadioButton) findViewById(R.id.radio_format_png);
+        mRadioFormatPNG.setChecked(settings.getExtrator() == Settings.FORMAT_PNG);
+        mRadioFormatJPEG = (RadioButton) findViewById(R.id.radio_format_jpeg);
+        mRadioFormatJPEG.setChecked(settings.getExtrator() == Settings.FORMAT_JPEG);
         mEditCount = (EditText) findViewById( R.id.edit_count );
-        mEditCount.setText( String.valueOf( settings.getImageCount() ));
+        mEditCount.setText(String.valueOf(settings.getFrameCount()));
         mEditHeight = (EditText) findViewById( R.id.edit_default_height );
         mEditHeight.setText( String.valueOf( settings.getDefaultHeight() ));
         mEditWidth = (EditText) findViewById( R.id.edit_default_width );
@@ -79,16 +85,24 @@ public class SettingsActivity extends AppCompatActivity
     private void saveSettings()
     {
         Settings settings = new Settings();
-        settings.setImageCount( Integer.valueOf( mEditCount.getText().toString() ) );
+        settings.setFrameCount(Integer.valueOf(mEditCount.getText().toString()));
         settings.setDefaultWidth( Integer.valueOf( mEditWidth.getText().toString() ) );
         settings.setDefaultHeight( Integer.valueOf( mEditHeight.getText().toString() ) );
         if( mRadioEGL.isChecked() )
         {
-            settings.setExtrator( Application.EXTRACTOR_EGL );
+            settings.setExtrator(Settings.EXTRACTOR_EGL);
         }
         else if( mRadioFFmpeg.isChecked() )
         {
-            settings.setExtrator( Application.EXTRACTOR_FFMPEG );
+            settings.setExtrator(Settings.EXTRACTOR_FFMPEG);
+        }
+
+        if (mRadioFormatPNG.isChecked())
+        {
+            settings.setImageFormat(Settings.FORMAT_PNG);
+        } else if (mRadioFormatJPEG.isChecked())
+        {
+            settings.setImageFormat(Settings.FORMAT_JPEG);
         }
 
         Application.saveSettings( settings );

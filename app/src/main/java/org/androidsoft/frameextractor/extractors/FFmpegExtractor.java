@@ -16,6 +16,7 @@
 package org.androidsoft.frameextractor.extractors;
 
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
 
 import org.androidsoft.frameextractor.ExtractAsyncTask;
@@ -41,14 +42,27 @@ public class FFmpegExtractor implements Extractor
         task.progressMessage("Extractor FFmpeg using FFmpegMediaMetadataRetriever()");
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         med.setDataSource(filePath);
-        for (int i = 0; i < settings.getImageCount(); i++)
+        for (int i = 0; i < settings.getFrameCount(); i++)
         {
-            String filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/image" + i + ".png";
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream( filename ));
-            task.progressMessage("Writing file: " + filename);
+            String filename = String.format("ffmpeg-frame-%02d%s", i, settings.getImageExtension());
+            String filepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename;
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filepath));
+            task.progressMessage("Writing file: " + filepath);
+            long t1 = System.currentTimeMillis();
             Bitmap bmp = med.getFrameAtTime(i * 1000000, FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
-            bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
+            if (settings.getImageFormat() == Settings.FORMAT_JPEG)
+            {
+                bmp.compress(Bitmap.CompressFormat.JPEG, 90, bos);
+            } else if (settings.getImageFormat() == Settings.FORMAT_PNG)
+            {
+                bmp.compress(Bitmap.CompressFormat.PNG, 90, bos);
+            }
+
             bmp.recycle();
+            long t2 = System.currentTimeMillis();
+            task.progressMessage("Processing time: " + (t2 - t1) + " ms");
+            // hack to see immediatly created files with MTP
+            MediaScannerConnection.scanFile(settings.getContext(), new String[]{filepath}, null, null);
         }
     }
 }

@@ -79,10 +79,10 @@ public class VideoListFragment extends Fragment
 
         switch ( selectedExtractor )
         {
-            case Application.EXTRACTOR_EGL:
+            case Settings.EXTRACTOR_EGL:
                 extractor = new EGLExtractor();
                 break;
-            case Application.EXTRACTOR_FFMPEG:
+            case Settings.EXTRACTOR_FFMPEG:
                 extractor = new FFmpegExtractor();
                 break;
 

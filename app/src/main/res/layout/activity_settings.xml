@@ -4,9 +4,27 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              app:layout_collapseParallaxMultiplier="1.0"
-              android:padding="20dp">
+              app:layout_collapseParallaxMultiplier="1.0">
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="30dp">
     <TextView
         android:text="Extractor technology"
         android:layout_width="match_parent"
@@ -20,14 +38,14 @@
             android:text="EGL Extractor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/button_egl_extractor"
+            android:id="@+id/radio_egl_extractor"
             android:checked="true"/>
 
         <RadioButton
             android:text="FFmepg Extrator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/button_ffmpeg_extractor"/>
+            android:id="@+id/radio_ffmpeg_extractor"/>
     </RadioGroup>
     <TextView
         android:text="Images generation"
@@ -36,10 +54,34 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
     <TextView
-        android:text="Image count"
+        android:text="Format"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:text="PNG"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_format_png"
+                android:checked="true"/>
+
+            <RadioButton
+                android:text="JPEG"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/radio_format_jpeg"/>
+        </RadioGroup>
+
+        <TextView
+            android:text="Number of frame captured"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
 
     <EditText
         android:layout_width="match_parent"
@@ -75,15 +117,16 @@
         android:id="@+id/edit_default_height"/>
 
     <Button
-        android:text="Cancel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button_cancel"/>
-
-    <Button
         android:text="OK"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/button_ok"/>
 
+        <Button
+        android:text="Cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_cancel"/>
+
+    </LinearLayout>
 </LinearLayout>
